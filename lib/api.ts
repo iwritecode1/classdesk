@@ -1,12 +1,13 @@
 // Mock API functions for ClassDesk
 // These simulate API calls and can be replaced with real backend integration
 
-import type { Student, FeePlan, Payment, ReminderLog, DashboardMetrics, ApiResponse } from './types'
+import type { Student, FeePlan, Payment, ReminderLog, DashboardMetrics, ApiResponse, Batch } from './types'
 import { 
   mockStudents, 
   mockFeePlans, 
   mockPayments, 
   mockReminderLogs,
+  mockBatches,
   calculateDashboardMetrics,
   getStudentWithFees,
   getOverdueStudents,
@@ -16,6 +17,40 @@ import {
 
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+// Batches API
+export async function fetchBatches(): Promise<ApiResponse<Batch[]>> {
+  await delay(300)
+  return { success: true, data: mockBatches }
+}
+
+export async function fetchBatch(id: string): Promise<ApiResponse<Batch | null>> {
+  await delay(200)
+  const batch = mockBatches.find(b => b._id === id)
+  return { success: true, data: batch || null }
+}
+
+export async function createBatch(batch: Omit<Batch, '_id' | 'tenantId' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Batch>> {
+  await delay(400)
+  const newBatch: Batch = {
+    ...batch,
+    _id: `batch_${Date.now()}`,
+    tenantId: TENANT_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  mockBatches.push(newBatch)
+  return { success: true, data: newBatch, message: 'Batch created successfully' }
+}
+
+export async function updateBatch(id: string, updates: Partial<Batch>): Promise<ApiResponse<Batch | null>> {
+  await delay(300)
+  const index = mockBatches.findIndex(b => b._id === id)
+  if (index === -1) return { success: false, error: 'Batch not found' }
+  
+  mockBatches[index] = { ...mockBatches[index], ...updates, updatedAt: new Date() }
+  return { success: true, data: mockBatches[index], message: 'Batch updated successfully' }
+}
 
 // Students API
 export async function fetchStudents(): Promise<ApiResponse<Student[]>> {
