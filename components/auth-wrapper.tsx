@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, ReactNode } from 'react'
+import { useEffect, ReactNode, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/use-auth'
 import { Loader2 } from 'lucide-react'
@@ -13,18 +13,31 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { user, isLoading } = useAuth()
+  const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    if (isLoading) return
+    // Small delay to ensure localStorage is read correctly
+    const timer = setTimeout(() => {
+      setIsChecking(false)
+    }, 50)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (isLoading || isChecking) return
 
     // Redirect to signin if not authenticated and trying to access dashboard
     if (!user && pathname.startsWith('/dashboard')) {
       router.push('/auth/signin')
+    } else if (user && (pathname === '/auth/signin' || pathname === '/auth/signup')) {
+      // Redirect to dashboard if authenticated and on auth pages
+      router.push('/dashboard')
     }
-  }, [user, isLoading, pathname, router])
+  }, [user, isLoading, isChecking, pathname, router])
 
   // Show loading state while checking auth
-  if (isLoading) {
+  if (isLoading || isChecking) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">

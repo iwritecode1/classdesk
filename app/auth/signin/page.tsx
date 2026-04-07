@@ -21,26 +21,33 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       if (!email || !password) {
         toast.error('Please enter email and password')
+        setIsLoading(false)
         return
       }
 
-      // Store user session in localStorage (demo only - use proper auth in production)
-      localStorage.setItem('user', JSON.stringify({ 
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // Store user session in localStorage BEFORE navigation (demo only - use proper auth in production)
+      const userData = { 
         email, 
         name: email.split('@')[0],
         institute: 'ClassDesk Institute'
-      }))
+      }
+      localStorage.setItem('user', JSON.stringify(userData))
+
+      // Dispatch storage event to notify other components
+      window.dispatchEvent(new Event('storage'))
 
       toast.success('Signed in successfully')
+      
+      // Use a small delay to ensure storage is processed
+      await new Promise(resolve => setTimeout(resolve, 100))
       router.push('/dashboard')
     } catch (error) {
       toast.error('Failed to sign in. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
