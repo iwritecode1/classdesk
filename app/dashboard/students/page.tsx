@@ -231,7 +231,7 @@ export default function StudentsPage() {
                           </TableCell>
                           <TableCell className="hidden lg:table-cell">
                             <Badge variant="secondary" className="text-xs">
-                              {getBatchName(student.academicInfo.batchIds[0])}
+                              {getBatchName(student.academicInfo.batchId)}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right font-medium">
