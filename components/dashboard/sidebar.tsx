@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   Users,
   CreditCard,
-  Receipt,
+  BookOpen,
   Bell,
   Settings,
   ChevronLeft,
@@ -21,7 +21,7 @@ import {
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/students', label: 'Students', icon: Users },
-  { href: '/dashboard/fee-plans', label: 'Fee Plans', icon: Receipt },
+  { href: '/dashboard/batches', label: 'Batches', icon: BookOpen },
   { href: '/dashboard/payments', label: 'Payments', icon: CreditCard },
   { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
 ]

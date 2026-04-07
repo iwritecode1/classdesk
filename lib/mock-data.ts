@@ -1,4 +1,4 @@
-import type { Student, FeePlan, Payment, ReminderLog, Institute, DashboardMetrics } from './types'
+import type { Student, FeePlan, Payment, ReminderLog, Institute, DashboardMetrics, Batch } from './types'
 
 // Mock tenant ID
 export const TENANT_ID = 'inst_001'
@@ -24,11 +24,7 @@ export const mockInstitute: Institute = {
   },
   academics: {
     subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology'],
-    batches: [
-      { _id: 'batch_001', name: 'JEE 2026 Morning', subject: 'JEE Main', timing: '6:00 AM - 9:00 AM' },
-      { _id: 'batch_002', name: 'NEET 2026 Evening', subject: 'NEET', timing: '4:00 PM - 7:00 PM' },
-      { _id: 'batch_003', name: 'Foundation Class 10', subject: 'Foundation', timing: '2:00 PM - 4:00 PM' },
-    ],
+    batches: [],
   },
   paymentConfig: {
     upi: 'excelcoaching@upi',
@@ -43,6 +39,73 @@ export const mockInstitute: Institute = {
   createdAt: new Date('2015-06-15'),
   updatedAt: new Date(),
 }
+
+// Mock Batches
+export const mockBatches: Batch[] = [
+  {
+    _id: 'batch_001',
+    tenantId: TENANT_ID,
+    name: 'JEE 2026 Morning',
+    subject: 'JEE Main',
+    timing: '6:00 AM - 9:00 AM',
+    description: 'Comprehensive JEE Main preparation course for 2026 aspirants',
+    capacity: 50,
+    enrolledCount: 2,
+    feeConfig: {
+      mode: 'quarterly',
+      frequency: 3,
+      baseAmount: 120000,
+      discount: 10000,
+      finalAmount: 110000,
+      startDate: new Date('2024-04-01'),
+    },
+    status: 'active',
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date(),
+  },
+  {
+    _id: 'batch_002',
+    tenantId: TENANT_ID,
+    name: 'NEET 2026 Evening',
+    subject: 'NEET',
+    timing: '4:00 PM - 7:00 PM',
+    description: 'NEET medical entrance exam preparation program',
+    capacity: 40,
+    enrolledCount: 2,
+    feeConfig: {
+      mode: 'monthly',
+      frequency: 1,
+      baseAmount: 150000,
+      discount: 15000,
+      finalAmount: 135000,
+      startDate: new Date('2024-03-15'),
+    },
+    status: 'active',
+    createdAt: new Date('2024-02-15'),
+    updatedAt: new Date(),
+  },
+  {
+    _id: 'batch_003',
+    tenantId: TENANT_ID,
+    name: 'Foundation Class 10',
+    subject: 'Foundation',
+    timing: '2:00 PM - 4:00 PM',
+    description: 'Foundation course for Class 10 students',
+    capacity: 60,
+    enrolledCount: 1,
+    feeConfig: {
+      mode: 'quarterly',
+      frequency: 3,
+      baseAmount: 60000,
+      discount: 5000,
+      finalAmount: 55000,
+      startDate: new Date('2024-05-01'),
+    },
+    status: 'active',
+    createdAt: new Date('2024-04-01'),
+    updatedAt: new Date(),
+  },
+]
 
 // Mock Students
 export const mockStudents: Student[] = [
@@ -65,7 +128,7 @@ export const mockStudents: Student[] = [
       schoolName: 'Delhi Public School',
       class: '12th',
       subjectsOpted: ['Mathematics', 'Physics', 'Chemistry'],
-      batchIds: ['batch_001'],
+      batchId: 'batch_001',
     },
     parents: [
       { name: 'Vikram Sharma', relation: 'father', phone: '+91 98765 11111' },
@@ -94,7 +157,7 @@ export const mockStudents: Student[] = [
       schoolName: 'Symbiosis School',
       class: '12th',
       subjectsOpted: ['Biology', 'Physics', 'Chemistry'],
-      batchIds: ['batch_002'],
+      batchId: 'batch_002',
     },
     parents: [
       { name: 'Amit Patel', relation: 'father', phone: '+91 98765 33333' },
@@ -122,7 +185,7 @@ export const mockStudents: Student[] = [
       schoolName: 'Kendriya Vidyalaya',
       class: '10th',
       subjectsOpted: ['Mathematics', 'Science'],
-      batchIds: ['batch_003'],
+      batchId: 'batch_003',
     },
     parents: [
       { name: 'Suresh Gupta', relation: 'father', phone: '+91 98765 44444' },
@@ -151,7 +214,7 @@ export const mockStudents: Student[] = [
       schoolName: 'Modern High School',
       class: '12th',
       subjectsOpted: ['Mathematics', 'Physics', 'Chemistry'],
-      batchIds: ['batch_001'],
+      batchId: 'batch_001',
     },
     parents: [
       { name: 'Rakesh Verma', relation: 'father', phone: '+91 98765 66666' },
@@ -179,7 +242,7 @@ export const mockStudents: Student[] = [
       schoolName: 'St. Marys School',
       class: '12th',
       subjectsOpted: ['Biology', 'Physics', 'Chemistry'],
-      batchIds: ['batch_002'],
+      batchId: 'batch_002',
     },
     parents: [
       { name: 'Harpreet Singh', relation: 'father', phone: '+91 98765 77777' },

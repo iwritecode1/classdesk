@@ -37,11 +37,28 @@ export interface Institute {
   updatedAt: Date
 }
 
+export interface BatchFeeConfig {
+  mode: 'monthly' | 'quarterly' | 'yearly' | 'custom'
+  frequency?: number // number of months between installments
+  baseAmount: number
+  discount: number
+  finalAmount: number
+  startDate: Date
+}
+
 export interface Batch {
   _id: string
+  tenantId: string
   name: string
   subject: string
   timing: string
+  description?: string
+  capacity: number
+  enrolledCount: number
+  feeConfig: BatchFeeConfig
+  status: 'active' | 'archived' | 'planned'
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface Student {
@@ -63,7 +80,7 @@ export interface Student {
     schoolName: string
     class: string
     subjectsOpted: string[]
-    batchIds: string[]
+    batchId: string // Changed from batchIds array for MVP
   }
   parents: Parent[]
   status: 'active' | 'inactive' | 'graduated'
