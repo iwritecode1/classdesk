@@ -208,10 +208,10 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden items-center gap-3 md:flex">
-            <Link href="/dashboard">
+            <Link href="/auth/signin">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/dashboard">
+            <Link href="/auth/signup">
               <Button className="gradient-bg border-0">Start Free Trial</Button>
             </Link>
           </div>
@@ -244,10 +244,10 @@ export default function LandingPage() {
                 FAQ
               </a>
               <div className="flex gap-2 pt-2">
-                <Link href="/dashboard" className="flex-1">
+                <Link href="/auth/signin" className="flex-1">
                   <Button variant="outline" className="w-full">Sign In</Button>
                 </Link>
-                <Link href="/dashboard" className="flex-1">
+                <Link href="/auth/signup" className="flex-1">
                   <Button className="w-full gradient-bg border-0">Start Trial</Button>
                 </Link>
               </div>
@@ -280,7 +280,7 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Link href="/dashboard">
+              <Link href="/auth/signup">
                 <Button size="lg" className="w-full sm:w-auto gradient-bg border-0 text-base h-12 px-8">
                   Start Free Trial
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -447,7 +447,7 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/dashboard">
+                  <Link href="/auth/signup">
                     <Button
                       className={cn(
                         'w-full',

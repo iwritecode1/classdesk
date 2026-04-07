@@ -38,14 +38,14 @@ import {
   Phone,
   Mail,
 } from 'lucide-react'
-import { fetchStudents, fetchFeePlans, formatCurrency } from '@/lib/api'
-import { mockInstitute } from '@/lib/mock-data'
-import type { Student, FeePlan } from '@/lib/types'
+import { fetchStudents, fetchFeePlans, formatCurrency, fetchBatches } from '@/lib/api'
+import type { Student, FeePlan, Batch } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [feePlans, setFeePlans] = useState<FeePlan[]>([])
+  const [batches, setBatches] = useState<Batch[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -53,13 +53,15 @@ export default function StudentsPage() {
 
   useEffect(() => {
     async function loadData() {
-      const [studentsRes, feePlansRes] = await Promise.all([
+      const [studentsRes, feePlansRes, batchesRes] = await Promise.all([
         fetchStudents(),
         fetchFeePlans(),
+        fetchBatches(),
       ])
       
       if (studentsRes.success && studentsRes.data) setStudents(studentsRes.data)
       if (feePlansRes.success && feePlansRes.data) setFeePlans(feePlansRes.data)
+      if (batchesRes.success && batchesRes.data) setBatches(batchesRes.data)
       
       setLoading(false)
     }
@@ -85,7 +87,7 @@ export default function StudentsPage() {
   }
 
   const getBatchName = (batchId: string) => {
-    const batch = mockInstitute.academics.batches.find(b => b._id === batchId)
+    const batch = batches.find(b => b._id === batchId)
     return batch?.name || 'Unknown'
   }
 
@@ -100,7 +102,7 @@ export default function StudentsPage() {
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter
     
     const matchesBatch = batchFilter === 'all' || 
-      student.academicInfo.batchIds.includes(batchFilter)
+      student.academicInfo.batchId === batchFilter
 
     return matchesSearch && matchesStatus && matchesBatch
   })
@@ -142,7 +144,7 @@ export default function StudentsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Batches</SelectItem>
-                {mockInstitute.academics.batches.map(batch => (
+                {batches.map(batch => (
                   <SelectItem key={batch._id} value={batch._id}>
                     {batch.name}
                   </SelectItem>
@@ -229,7 +231,7 @@ export default function StudentsPage() {
                           </TableCell>
                           <TableCell className="hidden lg:table-cell">
                             <Badge variant="secondary" className="text-xs">
-                              {getBatchName(student.academicInfo.batchIds[0])}
+                              {getBatchName(student.academicInfo.batchId)}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right font-medium">
