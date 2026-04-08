@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/dashboard/header'
+import { StudentCard } from '@/components/mobile/student-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -160,8 +161,48 @@ export default function StudentsPage() {
           </Link>
         </div>
 
-        {/* Students Table */}
-        <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden">
+        {/* Mobile Card View */}
+        {loading ? (
+          <div className="space-y-3 md:hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Card key={i} className="p-4 animate-pulse">
+                <div className="space-y-3">
+                  <div className="h-4 w-32 rounded bg-muted" />
+                  <div className="h-3 w-24 rounded bg-muted" />
+                  <div className="h-3 w-full rounded bg-muted" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="p-12 text-center">
+            <p className="text-muted-foreground">No students found</p>
+            <Link href="/dashboard/students/new">
+              <Button className="mt-4 gradient-bg border-0">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Your First Student
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3 md:hidden">
+            {filteredStudents.map((student) => {
+              const fees = getStudentFees(student._id)
+              const feePlan = feePlans.find(fp => fp.studentId === student._id)
+              return (
+                <StudentCard
+                  key={student._id}
+                  student={student}
+                  feePlan={feePlan}
+                  batchName={getBatchName(student.academicInfo.batchId)}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {/* Desktop Table View */}
+        <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden hidden md:block">
           <CardContent className="p-0">
             {loading ? (
               <div className="p-8 space-y-4">
@@ -296,18 +337,6 @@ export default function StudentsPage() {
                     })}
                   </TableBody>
                 </Table>
-              </div>
-            )}
-
-            {!loading && filteredStudents.length === 0 && (
-              <div className="p-12 text-center">
-                <p className="text-muted-foreground">No students found</p>
-                <Link href="/dashboard/students/new">
-                  <Button className="mt-4 gradient-bg border-0">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Your First Student
-                  </Button>
-                </Link>
               </div>
             )}
           </CardContent>
