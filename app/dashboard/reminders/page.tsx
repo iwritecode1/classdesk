@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Header } from '@/components/dashboard/header'
+import { ReminderCard } from '@/components/mobile/reminder-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -215,101 +216,161 @@ export default function RemindersPage() {
               </CardHeader>
               <CardContent className="p-0">
                 {loading ? (
-                  <div className="p-8 space-y-4">
+                  <div className="p-4 md:p-8 space-y-3 md:space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
                       <div key={i} className="h-16 w-full animate-pulse rounded bg-muted" />
                     ))}
                   </div>
                 ) : overdueStudents.length === 0 ? (
-                  <div className="p-12 text-center">
+                  <div className="p-8 md:p-12 text-center">
                     <CheckCircle className="h-12 w-12 mx-auto text-success mb-4" />
                     <p className="text-lg font-medium text-foreground">All caught up!</p>
                     <p className="text-muted-foreground">No overdue payments at the moment.</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-secondary/50 hover:bg-secondary/50">
-                          <TableHead className="font-semibold">Student</TableHead>
-                          <TableHead className="font-semibold">Contact</TableHead>
-                          <TableHead className="font-semibold">Due Date</TableHead>
-                          <TableHead className="font-semibold text-right">Amount</TableHead>
-                          <TableHead className="font-semibold">Days Overdue</TableHead>
-                          <TableHead className="font-semibold w-32">Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {overdueStudents.map((item) => {
-                          if (!item.student) return null
+                  <>
+                    {/* Mobile Card View */}
+                    <div className="space-y-3 p-4 md:hidden">
+                      {overdueStudents.map((item) => {
+                        if (!item.student) return null
+                        
+                        return item.overdueInstallments.map((installment) => {
+                          const isLoading = sendingReminder === `${item.student!._id}-${installment._id}`
                           
-                          return item.overdueInstallments.map((installment) => {
-                            const daysOverdue = Math.floor(
-                              (new Date().getTime() - new Date(installment.dueDate).getTime()) / (1000 * 60 * 60 * 24)
-                            )
-                            const isLoading = sendingReminder === `${item.student!._id}-${installment._id}`
-                            
-                            return (
-                              <TableRow key={`${item.student!._id}-${installment._id}`} className="hover:bg-secondary/30">
-                                <TableCell>
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-9 w-9 rounded-full gradient-bg flex items-center justify-center text-primary-foreground text-sm font-medium">
-                                      {item.student!.personalInfo.firstName[0]}
-                                      {item.student!.personalInfo.lastName[0]}
-                                    </div>
-                                    <div>
-                                      <p className="font-medium">
-                                        {item.student!.personalInfo.firstName} {item.student!.personalInfo.lastName}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        Class {item.student!.academicInfo.class}
-                                      </p>
-                                    </div>
+                          return (
+                            <Card key={`${item.student!._id}-${installment._id}`} className="p-4">
+                              <div className="space-y-3">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <h3 className="font-semibold">
+                                      {item.student!.personalInfo.firstName} {item.student!.personalInfo.lastName}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">Class {item.student!.academicInfo.class}</p>
                                   </div>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                    <Phone className="h-3 w-3" />
+                                  <Badge variant="destructive" className="text-xs">
+                                    {Math.floor((new Date().getTime() - new Date(installment.dueDate).getTime()) / (1000 * 60 * 60 * 24))} days
+                                  </Badge>
+                                </div>
+                                
+                                <div className="space-y-2 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <Phone className="h-4 w-4" />
                                     {item.student!.personalInfo.phone}
                                   </div>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-1 text-sm">
-                                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                                    {formatDate(installment.dueDate)}
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    Due: {formatDate(installment.dueDate)}
                                   </div>
-                                </TableCell>
-                                <TableCell className="text-right font-semibold text-destructive">
-                                  {formatCurrency(installment.amount)}
-                                </TableCell>
-                                <TableCell>
-                                  <Badge variant="destructive" className="text-xs">
-                                    {daysOverdue} days
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="gap-1"
-                                    disabled={isLoading}
-                                    onClick={() => handleSendReminder(item.student!, installment)}
-                                  >
-                                    {isLoading ? (
-                                      <RefreshCw className="h-3 w-3 animate-spin" />
-                                    ) : (
-                                      <Send className="h-3 w-3" />
-                                    )}
-                                    {isLoading ? 'Sending' : 'Send'}
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
+                                  <div className="text-base font-semibold text-destructive">
+                                    Amount: {formatCurrency(installment.amount)}
+                                  </div>
+                                </div>
+                                
+                                <Button
+                                  size="sm"
+                                  className="w-full gap-1"
+                                  disabled={isLoading}
+                                  onClick={() => handleSendReminder(item.student!, installment)}
+                                >
+                                  {isLoading ? (
+                                    <RefreshCw className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Send className="h-4 w-4" />
+                                  )}
+                                  {isLoading ? 'Sending Reminder...' : 'Send Reminder'}
+                                </Button>
+                              </div>
+                            </Card>
+                          )
+                        })
+                      })}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-secondary/50 hover:bg-secondary/50">
+                            <TableHead className="font-semibold">Student</TableHead>
+                            <TableHead className="font-semibold">Contact</TableHead>
+                            <TableHead className="font-semibold">Due Date</TableHead>
+                            <TableHead className="font-semibold text-right">Amount</TableHead>
+                            <TableHead className="font-semibold">Days Overdue</TableHead>
+                            <TableHead className="font-semibold w-32">Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {overdueStudents.map((item) => {
+                            if (!item.student) return null
+                            
+                            return item.overdueInstallments.map((installment) => {
+                              const daysOverdue = Math.floor(
+                                (new Date().getTime() - new Date(installment.dueDate).getTime()) / (1000 * 60 * 60 * 24)
+                              )
+                              const isLoading = sendingReminder === `${item.student!._id}-${installment._id}`
+                              
+                              return (
+                                <TableRow key={`${item.student!._id}-${installment._id}`} className="hover:bg-secondary/30">
+                                  <TableCell>
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-9 w-9 rounded-full gradient-bg flex items-center justify-center text-primary-foreground text-sm font-medium">
+                                        {item.student!.personalInfo.firstName[0]}
+                                        {item.student!.personalInfo.lastName[0]}
+                                      </div>
+                                      <div>
+                                        <p className="font-medium">
+                                          {item.student!.personalInfo.firstName} {item.student!.personalInfo.lastName}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                          Class {item.student!.academicInfo.class}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                      <Phone className="h-3 w-3" />
+                                      {item.student!.personalInfo.phone}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-1 text-sm">
+                                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                                      {formatDate(installment.dueDate)}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-right font-semibold text-destructive">
+                                    {formatCurrency(installment.amount)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge variant="destructive" className="text-xs">
+                                      {daysOverdue} days
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="gap-1"
+                                      disabled={isLoading}
+                                      onClick={() => handleSendReminder(item.student!, installment)}
+                                    >
+                                      {isLoading ? (
+                                        <RefreshCw className="h-3 w-3 animate-spin" />
+                                      ) : (
+                                        <Send className="h-3 w-3" />
+                                      )}
+                                      {isLoading ? 'Sending' : 'Send'}
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </>
                 )}
               </CardContent>
             </Card>

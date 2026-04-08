@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Header } from '@/components/dashboard/header'
+import { PaymentCard } from '@/components/mobile/payment-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -391,8 +392,41 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        {/* Payments Table */}
-        <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden">
+        {/* Mobile Card View */}
+        {loading ? (
+          <div className="space-y-3 md:hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Card key={i} className="p-4 animate-pulse">
+                <div className="space-y-3">
+                  <div className="h-4 w-24 rounded bg-muted" />
+                  <div className="h-5 w-32 rounded bg-muted" />
+                  <div className="h-3 w-full rounded bg-muted" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : filteredPayments.length === 0 ? (
+          <div className="p-12 text-center">
+            <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">No payments found</p>
+          </div>
+        ) : (
+          <div className="space-y-3 md:hidden">
+            {filteredPayments.map((payment) => {
+              const student = getStudent(payment.studentId)
+              return (
+                <PaymentCard
+                  key={payment._id}
+                  payment={payment}
+                  studentName={student ? `${student.personalInfo.firstName} ${student.personalInfo.lastName}` : 'Unknown'}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {/* Desktop Table View */}
+        <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden hidden md:block">
           <CardContent className="p-0">
             {loading ? (
               <div className="p-8 space-y-4">
